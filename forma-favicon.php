@@ -6,6 +6,8 @@
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author:       Forma
+ * Author URI:   https://github.com/justusdeitert
+ * Plugin URI:   https://github.com/justusdeitert/forma-wordpress
  * Text Domain:  forma-favicon
  * License:      GPL-2.0-or-later
  *
