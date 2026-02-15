@@ -75,36 +75,6 @@ add_action( 'admin_head', 'forma_favicon_disable_default_site_icon', 0 );
 add_action( 'login_head', 'forma_favicon_disable_default_site_icon', 0 );
 
 /**
- * Replace the Site Icon control in the Customizer with a link to Forma Favicon.
- *
- * @param WP_Customize_Manager $wp_customize Customizer manager.
- */
-function forma_favicon_customize_register( $wp_customize ) {
-    $option = get_option( 'forma_favicon', [] );
-
-    if ( empty( $option['generated'] ) ) {
-        return;
-    }
-
-    $wp_customize->remove_control( 'site_icon' );
-
-    $wp_customize->add_setting( 'forma_favicon_info', [
-        'sanitize_callback' => '__return_empty_string',
-    ] );
-
-    $wp_customize->add_control( new WP_Customize_Control( $wp_customize, 'forma_favicon_info', [
-        'label'       => __( 'Site Icon', 'forma-favicon' ),
-        'description' => sprintf(
-            __( 'Your favicon is managed by <strong>Forma Favicon</strong>. <a href="%s">Configure it here →</a>', 'forma-favicon' ),
-            esc_url( admin_url( 'themes.php?page=forma-favicon' ) )
-        ),
-        'section'     => 'title_tagline',
-        'type'        => 'hidden',
-    ] ) );
-}
-add_action( 'customize_register', 'forma_favicon_customize_register', 20 );
-
-/**
  * Show admin notice on Settings → General pointing to Forma Favicon.
  */
 function forma_favicon_general_settings_notice() {

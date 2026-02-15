@@ -3,6 +3,8 @@
  * Plugin Name:  Forma Favicon
  * Description:  Favicon generator — upload a source image, configure colors, and generate all favicon sizes + ICO file.
  * Version:      1.0.0
+ * Requires at least: 6.2
+ * Requires PHP: 7.4
  * Author:       Forma
  * Text Domain:  forma-favicon
  * License:      GPL-2.0-or-later
