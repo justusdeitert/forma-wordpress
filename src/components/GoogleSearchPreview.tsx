@@ -44,10 +44,10 @@ export const GoogleSearchPreview = ({ faviconUrl, cacheBuster, livePreviewUrl, d
             }`}>
                 {/* Site row: favicon + url + dots menu */}
                 <div className="flex items-center gap-3 mb-1">
-                    <div className={`w-[28px] h-[28px] rounded-full overflow-hidden flex items-center justify-center shrink-0 ${
+                    <div className={`w-[28px] h-[28px] rounded-full overflow-hidden flex items-center justify-center shrink-0 border border-solid ${
                         dark
-                            ? 'bg-white'
-                            : 'bg-[#f3f5f6]'
+                            ? 'bg-white border-[#5c5f5e]'
+                            : 'bg-[#f3f5f6] border-[#d2d2d2]'
                     }`}>
                         <img
                             src={favicon32}
