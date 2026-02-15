@@ -6,6 +6,8 @@
 
 import { useState } from '@wordpress/element';
 import { useFavicon } from '../hooks/use-favicon';
+import { getWindowData } from '../utils/get-data';
+import { ConflictNotice } from './ConflictNotice';
 import { Notice } from './Notice';
 import { SourceImage } from './SourceImage';
 import { ColorPickers } from './ColorPickers';
@@ -33,6 +35,7 @@ export const AdminFaviconApp = () => {
     } = useFavicon();
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const { conflicts } = getWindowData();
 
     return (
         <div className="max-w-4xl">
@@ -44,6 +47,8 @@ export const AdminFaviconApp = () => {
                     Touch Icon, Android Chrome icons, and web manifest.
                 </p>
             </div>
+
+            <ConflictNotice conflicts={conflicts} />
 
             {notice && <Notice notice={notice} />}
 

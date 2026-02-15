@@ -50,6 +50,36 @@ function forma_favicon_register_rest_routes() {
             return current_user_can( 'manage_options' );
         },
     ] );
+
+    register_rest_route( 'forma-favicon/v1', '/conflict/deactivate', [
+        'methods'             => 'POST',
+        'callback'            => 'forma_favicon_conflict_deactivate',
+        'permission_callback' => function () {
+            return current_user_can( 'activate_plugins' );
+        },
+        'args'                => [
+            'plugin' => [
+                'required'          => true,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+        ],
+    ] );
+
+    register_rest_route( 'forma-favicon/v1', '/conflict/delete', [
+        'methods'             => 'POST',
+        'callback'            => 'forma_favicon_conflict_delete',
+        'permission_callback' => function () {
+            return current_user_can( 'delete_plugins' );
+        },
+        'args'                => [
+            'plugin' => [
+                'required'          => true,
+                'type'              => 'string',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
+        ],
+    ] );
 }
 add_action( 'rest_api_init', 'forma_favicon_register_rest_routes' );
 
@@ -267,6 +297,78 @@ function forma_favicon_delete() {
         'theme_color' => '#ffffff',
         'bg_color'    => '#ffffff',
     ] );
+
+    return rest_ensure_response( [ 'success' => true ] );
+}
+
+/* ─────────────────────────── Conflict management ─────────────────────────── */
+
+/**
+ * Validate that a plugin basename is in our known conflicts list.
+ *
+ * @param string $basename Plugin basename.
+ * @return true|WP_Error
+ */
+function forma_favicon_validate_conflict( $basename ) {
+    $known = forma_favicon_get_known_conflicts();
+
+    if ( ! isset( $known[ $basename ] ) ) {
+        return new WP_Error( 'unknown_plugin', 'Plugin is not in the known conflicts list.', [ 'status' => 400 ] );
+    }
+
+    return true;
+}
+
+/**
+ * Deactivate a conflicting plugin via REST.
+ *
+ * @param WP_REST_Request $request REST request object.
+ * @return WP_REST_Response|WP_Error
+ */
+function forma_favicon_conflict_deactivate( WP_REST_Request $request ) {
+    $basename = $request->get_param( 'plugin' );
+    $valid    = forma_favicon_validate_conflict( $basename );
+
+    if ( is_wp_error( $valid ) ) {
+        return $valid;
+    }
+
+    if ( ! is_plugin_active( $basename ) ) {
+        return rest_ensure_response( [ 'success' => true, 'message' => 'Plugin is already inactive.' ] );
+    }
+
+    deactivate_plugins( $basename );
+
+    if ( is_plugin_active( $basename ) ) {
+        return new WP_Error( 'deactivation_failed', 'Could not deactivate the plugin.', [ 'status' => 500 ] );
+    }
+
+    return rest_ensure_response( [ 'success' => true ] );
+}
+
+/**
+ * Delete a conflicting plugin via REST (must be inactive).
+ *
+ * @param WP_REST_Request $request REST request object.
+ * @return WP_REST_Response|WP_Error
+ */
+function forma_favicon_conflict_delete( WP_REST_Request $request ) {
+    $basename = $request->get_param( 'plugin' );
+    $valid    = forma_favicon_validate_conflict( $basename );
+
+    if ( is_wp_error( $valid ) ) {
+        return $valid;
+    }
+
+    if ( is_plugin_active( $basename ) ) {
+        return new WP_Error( 'still_active', 'Deactivate the plugin before deleting it.', [ 'status' => 400 ] );
+    }
+
+    $result = delete_plugins( [ $basename ] );
+
+    if ( is_wp_error( $result ) ) {
+        return $result;
+    }
 
     return rest_ensure_response( [ 'success' => true ] );
 }

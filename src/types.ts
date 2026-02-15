@@ -11,12 +11,18 @@ export interface FaviconOption {
     bg_color: string;
 }
 
+export interface ConflictingPlugin {
+    basename: string;
+    name: string;
+}
+
 export interface WindowData {
     nonce: string;
     restUrl: string;
     faviconUrl: string;
     sourceUrl: string;
     option: FaviconOption;
+    conflicts: ConflictingPlugin[];
 }
 
 export interface Notice {

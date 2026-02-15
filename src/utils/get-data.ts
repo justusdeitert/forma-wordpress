@@ -12,6 +12,7 @@ const DEFAULT_DATA: WindowData = {
     faviconUrl: '',
     sourceUrl: '',
     option: { source_id: 0, generated: false, theme_color: '#ffffff', bg_color: '#ffffff' },
+    conflicts: [],
 };
 
 export function getWindowData(): WindowData {

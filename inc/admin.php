@@ -75,6 +75,7 @@ function forma_favicon_enqueue_admin_assets() {
         'faviconUrl' => $favicon_dir['url'],
         'sourceUrl'  => $source_url,
         'option'     => $option,
+        'conflicts'  => forma_favicon_get_active_conflicts(),
     ] ) . ';', 'before' );
 }
 

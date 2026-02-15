@@ -22,6 +22,7 @@ require_once FORMA_FAVICON_DIR . 'inc/helpers.php';
 require_once FORMA_FAVICON_DIR . 'inc/settings.php';
 require_once FORMA_FAVICON_DIR . 'inc/ico-generator.php';
 require_once FORMA_FAVICON_DIR . 'inc/rest-api.php';
+require_once FORMA_FAVICON_DIR . 'inc/conflicts.php';
 require_once FORMA_FAVICON_DIR . 'inc/admin.php';
 require_once FORMA_FAVICON_DIR . 'inc/frontend.php';
 require_once FORMA_FAVICON_DIR . 'inc/migration.php';
