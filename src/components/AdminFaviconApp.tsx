@@ -6,12 +6,14 @@
 
 import { useState } from '@wordpress/element';
 import { useFavicon } from '../hooks/use-favicon';
+import { useFaviconPreview } from '../hooks/use-favicon-preview';
 import { getWindowData } from '../utils/get-data';
 import { ConflictNotice } from './ConflictNotice';
 import { SiteIconNotice } from './SiteIconNotice';
 import { Notice } from './Notice';
 import { SourceImage } from './SourceImage';
 import { ColorPickers } from './ColorPickers';
+import { IconOptions } from './IconOptions';
 import { Actions } from './Actions';
 import { DeleteModal } from './DeleteModal';
 import { BrowserTabPreview } from './BrowserTabPreview';
@@ -24,13 +26,20 @@ export const AdminFaviconApp = () => {
         generated,
         themeColor,
         bgColor,
+        padding,
+        borderRadius,
+        iconBgColor,
         saving,
         deleting,
         notice,
         cacheBuster,
         faviconUrl,
+        hasUnsavedChanges,
         setThemeColor,
         setBgColor,
+        setPadding,
+        setBorderRadius,
+        setIconBgColor,
         openMediaLibrary,
         generate,
         deleteFavicons,
@@ -38,6 +47,13 @@ export const AdminFaviconApp = () => {
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const { conflicts } = getWindowData();
+
+    const livePreviewUrl = useFaviconPreview({
+        sourceUrl,
+        padding,
+        borderRadius,
+        iconBgColor,
+    });
 
     return (
         <div className="max-w-4xl">
@@ -68,6 +84,17 @@ export const AdminFaviconApp = () => {
             )}
 
             {sourceId > 0 && (
+                <IconOptions
+                    padding={padding}
+                    borderRadius={borderRadius}
+                    iconBgColor={iconBgColor}
+                    onPaddingChange={setPadding}
+                    onBorderRadiusChange={setBorderRadius}
+                    onIconBgColorChange={setIconBgColor}
+                />
+            )}
+
+            {sourceId > 0 && (
                 <Actions
                     generated={generated}
                     saving={saving}
@@ -88,7 +115,14 @@ export const AdminFaviconApp = () => {
                 />
             )}
 
-            {generated && <BrowserTabPreview faviconUrl={faviconUrl} cacheBuster={cacheBuster} />}
+            {sourceId > 0 && (
+                <BrowserTabPreview
+                    faviconUrl={faviconUrl}
+                    cacheBuster={cacheBuster}
+                    livePreviewUrl={hasUnsavedChanges || !generated ? livePreviewUrl : undefined}
+                    unsaved={hasUnsavedChanges}
+                />
+            )}
 
             {generated && <Preview faviconUrl={faviconUrl} cacheBuster={cacheBuster} />}
         </div>

@@ -16,18 +16,29 @@ import { getWindowData } from '../utils/get-data';
 interface Props {
     faviconUrl: string;
     cacheBuster: number;
+    /** Client-side canvas preview data URL (overrides server files when set). */
+    livePreviewUrl?: string;
+    /** Whether current settings differ from the last generated output. */
+    unsaved?: boolean;
 }
 
-export const BrowserTabPreview = ({ faviconUrl, cacheBuster }: Props) => {
+export const BrowserTabPreview = ({ faviconUrl, cacheBuster, livePreviewUrl, unsaved }: Props) => {
     const { siteTitle } = getWindowData();
     const [dark, setDark] = useState(false);
 
-    const favicon32 = `${faviconUrl}/favicon-32x32.png?v=${cacheBuster}`;
-    const appleTouchIcon = `${faviconUrl}/apple-touch-icon.png?v=${cacheBuster}`;
+    const favicon32 = livePreviewUrl || `${faviconUrl}/favicon-32x32.png?v=${cacheBuster}`;
+    const appleTouchIcon = livePreviewUrl || `${faviconUrl}/apple-touch-icon.png?v=${cacheBuster}`;
 
     return (
         <div className="mb-8">
-            <h2 className="text-base font-medium text-gray-700 m-0 mb-2">Preview</h2>
+            <div className="flex items-center gap-3 mb-2">
+                <h2 className="text-base font-medium text-gray-700 m-0">Preview</h2>
+                {unsaved && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700">
+                        Unsaved
+                    </span>
+                )}
+            </div>
             <p className="text-xs text-gray-400 m-0 mb-4">
                 How your favicon looks in a browser tab and as an app icon.
             </p>
@@ -61,12 +72,6 @@ export const BrowserTabPreview = ({ faviconUrl, cacheBuster }: Props) => {
             <div className="flex flex-wrap gap-6">
                 {/* Browser window mockup */}
                 <div className={`forma-favicon-browser-preview relative grid gap-4 w-[350px] h-[88px] pt-4 pl-4 overflow-hidden box-border border border-solid rounded-md${dark ? ' is-dark' : ''}`} style={{ gridTemplateColumns: '58px 1fr' }}>
-                    {/* Blurred background */}
-                    <div
-                        className="forma-favicon-browser-preview__bg absolute inset-0 w-[150%] aspect-square opacity-50 bg-cover bg-center pointer-events-none"
-                        style={{ backgroundImage: `url(${appleTouchIcon})` }}
-                    />
-
                     {/* App icon */}
                     <img
                         src={appleTouchIcon}

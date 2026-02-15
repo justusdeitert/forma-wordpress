@@ -40,6 +40,21 @@ function forma_favicon_register_rest_routes() {
                 'default'           => '#ffffff',
                 'sanitize_callback' => 'sanitize_hex_color',
             ],
+            'padding'       => [
+                'type'              => 'integer',
+                'default'           => 0,
+                'sanitize_callback' => 'absint',
+            ],
+            'border_radius' => [
+                'type'              => 'integer',
+                'default'           => 0,
+                'sanitize_callback' => 'absint',
+            ],
+            'icon_bg_color' => [
+                'type'              => 'string',
+                'default'           => '',
+                'sanitize_callback' => 'sanitize_text_field',
+            ],
         ],
     ] );
 
@@ -120,6 +135,9 @@ function forma_favicon_generate( WP_REST_Request $request ) {
     $source_data   = $request->get_param( 'source_data' );
     $theme_color   = $request->get_param( 'theme_color' ) ?: '#ffffff';
     $bg_color      = $request->get_param( 'bg_color' )    ?: '#ffffff';
+    $padding       = min( 40, max( 0, (int) $request->get_param( 'padding' ) ) );
+    $border_radius = min( 50, max( 0, (int) $request->get_param( 'border_radius' ) ) );
+    $icon_bg_color = $request->get_param( 'icon_bg_color' ) ?: '';
 
     $favicon_dir = forma_favicon_get_dir();
     $dir_path    = $favicon_dir['path'];
@@ -134,7 +152,7 @@ function forma_favicon_generate( WP_REST_Request $request ) {
         return $source_image;
     }
 
-    forma_favicon_resize_all( $source_image, $dir_path );
+    forma_favicon_resize_all( $source_image, $dir_path, $padding, $border_radius, $icon_bg_color );
     imagedestroy( $source_image );
 
     forma_favicon_generate_ico( $dir_path );
@@ -142,10 +160,13 @@ function forma_favicon_generate( WP_REST_Request $request ) {
     forma_favicon_write_browserconfig( $dir_path, $bg_color );
 
     update_option( 'forma_favicon', [
-        'source_id'   => $attachment_id,
-        'generated'   => true,
-        'theme_color' => $theme_color,
-        'bg_color'    => $bg_color,
+        'source_id'     => $attachment_id,
+        'generated'     => true,
+        'theme_color'   => $theme_color,
+        'bg_color'      => $bg_color,
+        'padding'       => $padding,
+        'border_radius' => $border_radius,
+        'icon_bg_color' => $icon_bg_color,
     ] );
 
     return rest_ensure_response( [
@@ -215,23 +236,133 @@ function forma_favicon_load_source( $attachment_id, $source_data ) {
 /**
  * Resize source image to all required favicon sizes.
  *
- * @param resource|GdImage $source_image GD image resource.
- * @param string           $dir_path     Output directory.
+ * Supports padding (percentage inset), border radius (percentage corners),
+ * and an optional background color behind the icon.
+ *
+ * @param resource|GdImage $source_image  GD image resource.
+ * @param string           $dir_path      Output directory.
+ * @param int              $padding       Padding percentage (0–40).
+ * @param int              $border_radius Border radius percentage (0–50).
+ * @param string           $icon_bg_color Hex background color (empty = transparent).
  */
-function forma_favicon_resize_all( $source_image, $dir_path ) {
+function forma_favicon_resize_all( $source_image, $dir_path, $padding = 0, $border_radius = 0, $icon_bg_color = '' ) {
     $src_w = imagesx( $source_image );
     $src_h = imagesy( $source_image );
 
     foreach ( forma_favicon_get_sizes() as $filename => $size ) {
-        $resized = imagecreatetruecolor( $size, $size );
-        imagealphablending( $resized, false );
-        imagesavealpha( $resized, true );
-        $transparent = imagecolorallocatealpha( $resized, 0, 0, 0, 127 );
-        imagefill( $resized, 0, 0, $transparent );
-        imagecopyresampled( $resized, $source_image, 0, 0, 0, 0, $size, $size, $src_w, $src_h );
-        imagepng( $resized, $dir_path . '/' . $filename, 9 );
-        imagedestroy( $resized );
+        $canvas = imagecreatetruecolor( $size, $size );
+        imagealphablending( $canvas, false );
+        imagesavealpha( $canvas, true );
+        $transparent = imagecolorallocatealpha( $canvas, 0, 0, 0, 127 );
+        imagefill( $canvas, 0, 0, $transparent );
+
+        // Fill background color if set.
+        if ( $icon_bg_color ) {
+            $bg_rgb = forma_favicon_hex_to_rgb( $icon_bg_color );
+            $bg     = imagecolorallocate( $canvas, $bg_rgb[0], $bg_rgb[1], $bg_rgb[2] );
+            imagealphablending( $canvas, true );
+            imagefilledrectangle( $canvas, 0, 0, $size - 1, $size - 1, $bg );
+        }
+
+        // Calculate padding offset.
+        $pad_px   = (int) round( $size * $padding / 100 );
+        $icon_size = $size - ( $pad_px * 2 );
+
+        if ( $icon_size < 1 ) {
+            $icon_size = 1;
+            $pad_px    = (int) ( ( $size - 1 ) / 2 );
+        }
+
+        imagealphablending( $canvas, true );
+        imagecopyresampled( $canvas, $source_image, $pad_px, $pad_px, 0, 0, $icon_size, $icon_size, $src_w, $src_h );
+
+        // Apply border radius mask.
+        if ( $border_radius > 0 ) {
+            forma_favicon_apply_border_radius( $canvas, $size, $border_radius );
+        }
+
+        imagealphablending( $canvas, false );
+        imagesavealpha( $canvas, true );
+        imagepng( $canvas, $dir_path . '/' . $filename, 9 );
+        imagedestroy( $canvas );
     }
+}
+
+/**
+ * Apply a rounded-corner mask to a GD image.
+ *
+ * @param resource|GdImage $image         GD image resource (modified in place).
+ * @param int              $size          Image width/height in pixels.
+ * @param int              $radius_pct    Border radius as percentage (0–50).
+ */
+function forma_favicon_apply_border_radius( &$image, $size, $radius_pct ) {
+    $radius = (int) round( $size * $radius_pct / 100 );
+
+    if ( $radius < 1 ) {
+        return;
+    }
+
+    // Create a mask image: white = keep, black (transparent) = discard.
+    $mask = imagecreatetruecolor( $size, $size );
+    imagealphablending( $mask, false );
+    imagesavealpha( $mask, true );
+    $mask_transparent = imagecolorallocatealpha( $mask, 0, 0, 0, 127 );
+    imagefill( $mask, 0, 0, $mask_transparent );
+
+    $white = imagecolorallocate( $mask, 255, 255, 255 );
+
+    // Draw filled rounded rectangle on the mask.
+    // Center rectangle (horizontal bar).
+    imagefilledrectangle( $mask, $radius, 0, $size - $radius - 1, $size - 1, $white );
+    // Left bar.
+    imagefilledrectangle( $mask, 0, $radius, $radius - 1, $size - $radius - 1, $white );
+    // Right bar.
+    imagefilledrectangle( $mask, $size - $radius, $radius, $size - 1, $size - $radius - 1, $white );
+
+    // Four corner arcs.
+    $diameter = $radius * 2;
+    imagefilledellipse( $mask, $radius, $radius, $diameter, $diameter, $white );                          // top-left
+    imagefilledellipse( $mask, $size - $radius - 1, $radius, $diameter, $diameter, $white );              // top-right
+    imagefilledellipse( $mask, $radius, $size - $radius - 1, $diameter, $diameter, $white );              // bottom-left
+    imagefilledellipse( $mask, $size - $radius - 1, $size - $radius - 1, $diameter, $diameter, $white );  // bottom-right
+
+    // Apply mask: make pixels transparent where mask is not white.
+    imagealphablending( $image, false );
+    $transparent = imagecolorallocatealpha( $image, 0, 0, 0, 127 );
+
+    for ( $x = 0; $x < $size; $x++ ) {
+        for ( $y = 0; $y < $size; $y++ ) {
+            $mask_color = imagecolorat( $mask, $x, $y );
+            $mask_alpha = ( $mask_color >> 24 ) & 0x7F;
+
+            if ( $mask_alpha > 0 ) {
+                imagesetpixel( $image, $x, $y, $transparent );
+            }
+        }
+    }
+
+    imagesavealpha( $image, true );
+    imagedestroy( $mask );
+}
+
+/**
+ * Convert a hex color string to an RGB array.
+ *
+ * @param string $hex Hex color (e.g. '#ff0000').
+ * @return int[] [r, g, b]
+ */
+function forma_favicon_hex_to_rgb( $hex ) {
+    $hex = ltrim( $hex, '#' );
+
+    if ( strlen( $hex ) === 3 ) {
+        $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+    }
+
+    return [
+        hexdec( substr( $hex, 0, 2 ) ),
+        hexdec( substr( $hex, 2, 2 ) ),
+        hexdec( substr( $hex, 4, 2 ) ),
+    ];
 }
 
 /* ─────────────────────────── Manifest / Config files ─────────────────────────── */

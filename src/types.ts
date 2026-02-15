@@ -9,6 +9,9 @@ export interface FaviconOption {
     generated: boolean;
     theme_color: string;
     bg_color: string;
+    padding: number;
+    border_radius: number;
+    icon_bg_color: string;
 }
 
 export interface ConflictingPlugin {

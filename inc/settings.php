@@ -20,10 +20,13 @@ function forma_favicon_register_setting() {
             'schema' => [
                 'type'       => 'object',
                 'properties' => [
-                    'source_id'   => [ 'type' => 'integer' ],
-                    'generated'   => [ 'type' => 'boolean' ],
-                    'theme_color' => [ 'type' => 'string' ],
-                    'bg_color'    => [ 'type' => 'string' ],
+                    'source_id'     => [ 'type' => 'integer' ],
+                    'generated'     => [ 'type' => 'boolean' ],
+                    'theme_color'   => [ 'type' => 'string' ],
+                    'bg_color'      => [ 'type' => 'string' ],
+                    'padding'       => [ 'type' => 'integer' ],
+                    'border_radius' => [ 'type' => 'integer' ],
+                    'icon_bg_color' => [ 'type' => 'string' ],
                 ],
             ],
         ],
@@ -44,9 +47,12 @@ function forma_favicon_sanitize( $value ) {
     }
 
     return [
-        'source_id'   => isset( $value['source_id'] )   ? absint( $value['source_id'] )               : 0,
-        'generated'   => isset( $value['generated'] )    ? (bool) $value['generated']                  : false,
-        'theme_color' => isset( $value['theme_color'] )  ? sanitize_hex_color( $value['theme_color'] ) : '#ffffff',
-        'bg_color'    => isset( $value['bg_color'] )     ? sanitize_hex_color( $value['bg_color'] )    : '#ffffff',
+        'source_id'     => isset( $value['source_id'] )     ? absint( $value['source_id'] )               : 0,
+        'generated'     => isset( $value['generated'] )     ? (bool) $value['generated']                  : false,
+        'theme_color'   => isset( $value['theme_color'] )   ? sanitize_hex_color( $value['theme_color'] ) : '#ffffff',
+        'bg_color'      => isset( $value['bg_color'] )      ? sanitize_hex_color( $value['bg_color'] )    : '#ffffff',
+        'padding'       => isset( $value['padding'] )       ? min( 40, max( 0, absint( $value['padding'] ) ) ) : 0,
+        'border_radius' => isset( $value['border_radius'] ) ? min( 50, max( 0, absint( $value['border_radius'] ) ) ) : 0,
+        'icon_bg_color' => isset( $value['icon_bg_color'] ) ? sanitize_hex_color( $value['icon_bg_color'] ) : '',
     ];
 }

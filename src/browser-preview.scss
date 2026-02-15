@@ -38,12 +38,6 @@
     }
 }
 
-/* Blurred background — needs var-based background-image via inline style */
-.forma-favicon-browser-preview__bg {
-    transform: translate(-12.5%, -12.5%);
-    filter: blur(5px);
-}
-
 /* App icon border */
 .forma-favicon-browser-preview__app-icon {
     outline: 1px solid rgba(0, 0, 0, 0.2);

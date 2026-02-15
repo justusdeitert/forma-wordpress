@@ -4,7 +4,7 @@
  * @package FormaFavicon
  */
 
-import { useState, useCallback } from '@wordpress/element';
+import { useState, useCallback, useRef } from '@wordpress/element';
 import type { Notice } from '../types';
 import { getWindowData } from '../utils/get-data';
 import { rasterizeToBase64 } from '../utils/rasterize';
@@ -18,10 +18,30 @@ export function useFavicon() {
     const [generated, setGenerated] = useState(data.option?.generated || false);
     const [themeColor, setThemeColor] = useState(data.option?.theme_color || '#ffffff');
     const [bgColor, setBgColor] = useState(data.option?.bg_color || '#ffffff');
+    const [padding, setPadding] = useState(data.option?.padding || 0);
+    const [borderRadius, setBorderRadius] = useState(data.option?.border_radius || 0);
+    const [iconBgColor, setIconBgColor] = useState(data.option?.icon_bg_color || '');
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [notice, setNotice] = useState<Notice | null>(null);
     const [cacheBuster, setCacheBuster] = useState(Date.now());
+
+    // Track the last-generated settings to detect unsaved changes.
+    const savedState = useRef({
+        padding: data.option?.padding || 0,
+        borderRadius: data.option?.border_radius || 0,
+        iconBgColor: data.option?.icon_bg_color || '',
+        themeColor: data.option?.theme_color || '#ffffff',
+        bgColor: data.option?.bg_color || '#ffffff',
+    });
+
+    const hasUnsavedChanges = generated && (
+        padding !== savedState.current.padding ||
+        borderRadius !== savedState.current.borderRadius ||
+        iconBgColor !== savedState.current.iconBgColor ||
+        themeColor !== savedState.current.themeColor ||
+        bgColor !== savedState.current.bgColor
+    );
 
     const showNotice = useCallback((type: Notice['type'], message: string) => {
         setNotice({ type, message });
@@ -63,6 +83,9 @@ export function useFavicon() {
             const bodyData: Record<string, any> = {
                 theme_color: themeColor,
                 bg_color: bgColor,
+                padding,
+                border_radius: borderRadius,
+                icon_bg_color: iconBgColor,
             };
 
             if (isSvg) {
@@ -93,6 +116,7 @@ export function useFavicon() {
             if (res.ok && json.success) {
                 setGenerated(true);
                 setCacheBuster(Date.now());
+                savedState.current = { padding, borderRadius, iconBgColor, themeColor, bgColor };
                 showNotice('success', 'Favicons generated successfully! All sizes + ICO file created.');
             } else {
                 showNotice('error', json.message || 'Failed to generate favicons.');
@@ -102,7 +126,7 @@ export function useFavicon() {
         } finally {
             setSaving(false);
         }
-    }, [sourceId, sourceUrl, isSvg, themeColor, bgColor, data.restUrl, data.nonce, showNotice]);
+    }, [sourceId, sourceUrl, isSvg, themeColor, bgColor, padding, borderRadius, iconBgColor, data.restUrl, data.nonce, showNotice]);
 
     const deleteFavicons = useCallback(async () => {
         setDeleting(true);
@@ -125,6 +149,9 @@ export function useFavicon() {
                 setGenerated(false);
                 setThemeColor('#ffffff');
                 setBgColor('#ffffff');
+                setPadding(0);
+                setBorderRadius(0);
+                setIconBgColor('');
                 showNotice('success', 'All favicons removed.');
             } else {
                 showNotice('error', 'Failed to delete favicons.');
@@ -143,15 +170,22 @@ export function useFavicon() {
         generated,
         themeColor,
         bgColor,
+        padding,
+        borderRadius,
+        iconBgColor,
         saving,
         deleting,
         notice,
         cacheBuster,
         faviconUrl: data.faviconUrl,
+        hasUnsavedChanges,
 
         // Setters
         setThemeColor,
         setBgColor,
+        setPadding,
+        setBorderRadius,
+        setIconBgColor,
 
         // Actions
         openMediaLibrary,
