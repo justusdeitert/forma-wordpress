@@ -80,6 +80,14 @@ function forma_favicon_register_rest_routes() {
             ],
         ],
     ] );
+
+    register_rest_route( 'forma-favicon/v1', '/clear-site-icon', [
+        'methods'             => 'POST',
+        'callback'            => 'forma_favicon_clear_site_icon',
+        'permission_callback' => function () {
+            return current_user_can( 'manage_options' );
+        },
+    ] );
 }
 add_action( 'rest_api_init', 'forma_favicon_register_rest_routes' );
 
@@ -369,6 +377,19 @@ function forma_favicon_conflict_delete( WP_REST_Request $request ) {
     if ( is_wp_error( $result ) ) {
         return $result;
     }
+
+    return rest_ensure_response( [ 'success' => true ] );
+}
+
+/* ─────────────────────────── WordPress Site Icon ─────────────────────────── */
+
+/**
+ * Clear the WordPress built-in site icon.
+ *
+ * @return WP_REST_Response
+ */
+function forma_favicon_clear_site_icon() {
+    delete_option( 'site_icon' );
 
     return rest_ensure_response( [ 'success' => true ] );
 }

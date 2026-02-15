@@ -23,6 +23,7 @@ export interface WindowData {
     sourceUrl: string;
     option: FaviconOption;
     conflicts: ConflictingPlugin[];
+    siteIconId: number;
 }
 
 export interface Notice {

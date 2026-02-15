@@ -8,6 +8,7 @@ import { useState } from '@wordpress/element';
 import { useFavicon } from '../hooks/use-favicon';
 import { getWindowData } from '../utils/get-data';
 import { ConflictNotice } from './ConflictNotice';
+import { SiteIconNotice } from './SiteIconNotice';
 import { Notice } from './Notice';
 import { SourceImage } from './SourceImage';
 import { ColorPickers } from './ColorPickers';
@@ -49,6 +50,8 @@ export const AdminFaviconApp = () => {
             </div>
 
             <ConflictNotice conflicts={conflicts} />
+
+            {generated && <SiteIconNotice />}
 
             {notice && <Notice notice={notice} />}
 
