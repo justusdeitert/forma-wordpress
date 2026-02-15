@@ -10,7 +10,6 @@
  * @package FormaFavicon
  */
 
-import { useState } from '@wordpress/element';
 import { getWindowData } from '../utils/get-data';
 
 interface Props {
@@ -20,54 +19,21 @@ interface Props {
     livePreviewUrl?: string;
     /** Whether current settings differ from the last generated output. */
     unsaved?: boolean;
+    /** Whether dark mode is active. */
+    dark?: boolean;
 }
 
-export const BrowserTabPreview = ({ faviconUrl, cacheBuster, livePreviewUrl, unsaved }: Props) => {
+export const BrowserTabPreview = ({ faviconUrl, cacheBuster, livePreviewUrl, unsaved, dark = false }: Props) => {
     const { siteTitle } = getWindowData();
-    const [dark, setDark] = useState(false);
 
     const favicon32 = livePreviewUrl || `${faviconUrl}/favicon-32x32.png?v=${cacheBuster}`;
     const appleTouchIcon = livePreviewUrl || `${faviconUrl}/apple-touch-icon.png?v=${cacheBuster}`;
 
     return (
-        <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-base font-medium text-gray-700 m-0">Preview</h2>
-                {unsaved && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700">
-                        Unsaved
-                    </span>
-                )}
-            </div>
+        <div className="mb-6">
             <p className="text-xs text-gray-400 m-0 mb-4">
                 How your favicon looks in a browser tab and as an app icon.
             </p>
-
-            {/* Light / Dark toggle */}
-            <div className="inline-flex items-center gap-1 p-0.5 mb-4 rounded-lg bg-gray-100 text-xs font-medium">
-                <button
-                    type="button"
-                    onClick={() => setDark(false)}
-                    className={`px-3 py-1.5 rounded-md border-none cursor-pointer transition-colors ${
-                        !dark
-                            ? 'bg-white text-gray-800 shadow-sm'
-                            : 'bg-transparent text-gray-400 hover:text-gray-600'
-                    }`}
-                >
-                    ☀ Light
-                </button>
-                <button
-                    type="button"
-                    onClick={() => setDark(true)}
-                    className={`px-3 py-1.5 rounded-md border-none cursor-pointer transition-colors ${
-                        dark
-                            ? 'bg-gray-800 text-white shadow-sm'
-                            : 'bg-transparent text-gray-400 hover:text-gray-600'
-                    }`}
-                >
-                    ☾ Dark
-                </button>
-            </div>
 
             <div className="flex flex-wrap gap-6">
                 {/* Browser window mockup */}

@@ -17,6 +17,7 @@ import { IconOptions } from './IconOptions';
 import { Actions } from './Actions';
 import { DeleteModal } from './DeleteModal';
 import { BrowserTabPreview } from './BrowserTabPreview';
+import { GoogleSearchPreview } from './GoogleSearchPreview';
 import { Preview } from './Preview';
 
 export const AdminFaviconApp = () => {
@@ -46,6 +47,7 @@ export const AdminFaviconApp = () => {
     } = useFavicon();
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [previewDark, setPreviewDark] = useState(false);
     const { conflicts } = getWindowData();
 
     const livePreviewUrl = useFaviconPreview({
@@ -116,12 +118,57 @@ export const AdminFaviconApp = () => {
             )}
 
             {sourceId > 0 && (
-                <BrowserTabPreview
-                    faviconUrl={faviconUrl}
-                    cacheBuster={cacheBuster}
-                    livePreviewUrl={hasUnsavedChanges || !generated ? livePreviewUrl : undefined}
-                    unsaved={hasUnsavedChanges}
-                />
+                <div className="mb-8">
+                    <div className="flex items-center gap-3 mb-2">
+                        <h2 className="text-base font-medium text-gray-700 m-0">Preview</h2>
+                        {hasUnsavedChanges && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700">
+                                Unsaved
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Light / Dark toggle */}
+                    <div className="inline-flex items-center gap-1 p-0.5 mb-4 rounded-lg bg-gray-100 text-xs font-medium">
+                        <button
+                            type="button"
+                            onClick={() => setPreviewDark(false)}
+                            className={`px-3 py-1.5 rounded-md border-none cursor-pointer transition-colors ${
+                                !previewDark
+                                    ? 'bg-white text-gray-800 shadow-sm'
+                                    : 'bg-transparent text-gray-400 hover:text-gray-600'
+                            }`}
+                        >
+                            ☀ Light
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setPreviewDark(true)}
+                            className={`px-3 py-1.5 rounded-md border-none cursor-pointer transition-colors ${
+                                previewDark
+                                    ? 'bg-gray-800 text-white shadow-sm'
+                                    : 'bg-transparent text-gray-400 hover:text-gray-600'
+                            }`}
+                        >
+                            ☾ Dark
+                        </button>
+                    </div>
+
+                    <BrowserTabPreview
+                        faviconUrl={faviconUrl}
+                        cacheBuster={cacheBuster}
+                        livePreviewUrl={hasUnsavedChanges || !generated ? livePreviewUrl : undefined}
+                        unsaved={hasUnsavedChanges}
+                        dark={previewDark}
+                    />
+
+                    <GoogleSearchPreview
+                        faviconUrl={faviconUrl}
+                        cacheBuster={cacheBuster}
+                        livePreviewUrl={hasUnsavedChanges || !generated ? livePreviewUrl : undefined}
+                        dark={previewDark}
+                    />
+                </div>
             )}
 
             {generated && <Preview faviconUrl={faviconUrl} cacheBuster={cacheBuster} />}
