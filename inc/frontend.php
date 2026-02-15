@@ -55,6 +55,8 @@ function forma_favicon_output_tags() {
     echo '<meta name="msapplication-TileColor" content="' . esc_attr( $bg_color ) . '">' . "\n";
 }
 add_action( 'wp_head', 'forma_favicon_output_tags', 1 );
+add_action( 'admin_head', 'forma_favicon_output_tags', 1 );
+add_action( 'login_head', 'forma_favicon_output_tags', 1 );
 
 /**
  * Disable the default WordPress site icon when our favicons are active.
