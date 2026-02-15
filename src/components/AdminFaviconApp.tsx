@@ -14,6 +14,7 @@ import { SourceImage } from './SourceImage';
 import { ColorPickers } from './ColorPickers';
 import { Actions } from './Actions';
 import { DeleteModal } from './DeleteModal';
+import { BrowserTabPreview } from './BrowserTabPreview';
 import { Preview } from './Preview';
 
 export const AdminFaviconApp = () => {
@@ -86,6 +87,8 @@ export const AdminFaviconApp = () => {
                     onCancel={() => setShowDeleteModal(false)}
                 />
             )}
+
+            {generated && <BrowserTabPreview faviconUrl={faviconUrl} cacheBuster={cacheBuster} />}
 
             {generated && <Preview faviconUrl={faviconUrl} cacheBuster={cacheBuster} />}
         </div>

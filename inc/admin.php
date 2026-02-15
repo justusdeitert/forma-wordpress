@@ -77,6 +77,8 @@ function forma_favicon_enqueue_admin_assets() {
         'option'     => $option,
         'conflicts'  => forma_favicon_get_active_conflicts(),
         'siteIconId' => (int) get_option( 'site_icon', 0 ),
+        'siteTitle'  => get_bloginfo( 'name' ),
+        'siteUrl'    => home_url(),
     ] ) . ';', 'before' );
 }
 

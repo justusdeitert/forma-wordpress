@@ -8,6 +8,7 @@
 
 import { render } from '@wordpress/element';
 import 'uno.css';
+import './browser-preview.scss';
 import { AdminFaviconApp } from './components/AdminFaviconApp';
 
 const root = document.getElementById('forma-favicon-app');

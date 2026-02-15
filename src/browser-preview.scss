@@ -1,0 +1,83 @@
+/**
+ * Browser-tab preview styles.
+ *
+ * Only properties that can't be expressed as UnoCSS utilities live here:
+ * CSS custom properties, gradients referencing those vars, and the
+ * blurred-background pseudo-trick. Everything else is handled by
+ * utility classes directly on the JSX elements.
+ *
+ * @package FormaFavicon
+ */
+
+.forma-favicon-browser-preview {
+    --ff-bg: #fff;
+    --ff-chrome-top: #dcdcde;
+    --ff-chrome-bottom: #a7aaad;
+    --ff-chrome-border: rgba(255, 255, 255, 0.2);
+    --ff-tab-bg: #f0f0f1;
+    --ff-tab-close: #646970;
+    --ff-tab-text: #3c434a;
+    --ff-border: #8c8f94;
+    --ff-shadow-1: rgba(0, 0, 0, 0.1);
+    --ff-shadow-2: rgba(0, 0, 0, 0.2);
+    --ff-shadow-3: rgba(0, 0, 0, 0.5);
+
+    border-color: var(--ff-border);
+    background-color: var(--ff-bg);
+
+    &.is-dark {
+        --ff-chrome-top: #2c3338;
+        --ff-chrome-bottom: #111;
+        --ff-tab-bg: #3c434a;
+        --ff-tab-close: #f0f0f1;
+        --ff-tab-text: #f0f0f1;
+        --ff-border: #555;
+        --ff-shadow-1: rgba(0, 0, 0, 0.25);
+        --ff-shadow-2: rgba(0, 0, 0, 0.4);
+        --ff-shadow-3: rgba(0, 0, 0, 0.7);
+    }
+}
+
+/* Blurred background — needs var-based background-image via inline style */
+.forma-favicon-browser-preview__bg {
+    transform: translate(-12.5%, -12.5%);
+    filter: blur(5px);
+}
+
+/* App icon border */
+.forma-favicon-browser-preview__app-icon {
+    outline: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Chrome gradient + border colors from vars */
+.forma-favicon-browser-preview__chrome {
+    border-color: var(--ff-chrome-border);
+    background: linear-gradient(180deg, var(--ff-chrome-top) 0%, var(--ff-chrome-bottom) 100%);
+    box-shadow: 0 10px 22px 0 var(--ff-shadow-2);
+}
+
+/* Dots fill from var */
+.forma-favicon-browser-preview__dots {
+    fill: var(--ff-border);
+}
+
+/* Tab bg + shadow from vars */
+.forma-favicon-browser-preview__tab {
+    background-color: var(--ff-tab-bg);
+    box-shadow: 0 1px 3px 0 var(--ff-shadow-1);
+}
+
+/* Tab icon shadow */
+.forma-favicon-browser-preview__tab-icon {
+    box-shadow: 0 0 20px 0 var(--ff-shadow-1);
+}
+
+/* Tab title color from var */
+.forma-favicon-browser-preview__tab-title {
+    color: var(--ff-tab-text);
+}
+
+/* Close icon fill from var */
+.forma-favicon-browser-preview__tab-close {
+    fill: var(--ff-tab-close);
+}

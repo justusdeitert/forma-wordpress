@@ -24,6 +24,8 @@ export interface WindowData {
     option: FaviconOption;
     conflicts: ConflictingPlugin[];
     siteIconId: number;
+    siteTitle: string;
+    siteUrl: string;
 }
 
 export interface Notice {
