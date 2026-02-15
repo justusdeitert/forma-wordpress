@@ -9,6 +9,7 @@
  * Author URI:   https://github.com/justusdeitert
  * Plugin URI:   https://github.com/justusdeitert/forma-wordpress
  * Text Domain:  forma-favicon
+ * Domain Path:  /languages
  * License:      GPL-2.0-or-later
  *
  * @package FormaFavicon
@@ -17,6 +18,14 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+
+/**
+ * Load plugin text domain for translations.
+ */
+function forma_favicon_load_textdomain() {
+    load_plugin_textdomain( 'forma-favicon', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
+add_action( 'init', 'forma_favicon_load_textdomain' );
 
 define( 'FORMA_FAVICON_VERSION', '1.0.0' );
 define( 'FORMA_FAVICON_DIR', plugin_dir_path( __FILE__ ) );

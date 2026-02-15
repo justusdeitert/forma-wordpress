@@ -143,7 +143,7 @@ function forma_favicon_generate( WP_REST_Request $request ) {
     $dir_path    = $favicon_dir['path'];
 
     if ( ! wp_mkdir_p( $dir_path ) ) {
-        return new WP_Error( 'dir_error', 'Could not create favicon directory.', [ 'status' => 500 ] );
+        return new WP_Error( 'dir_error', __( 'Could not create favicon directory.', 'forma-favicon' ), [ 'status' => 500 ] );
     }
 
     $source_image = forma_favicon_load_source( $attachment_id, $source_data );
@@ -200,14 +200,14 @@ function forma_favicon_load_source( $attachment_id, $source_data ) {
         $source_path = get_attached_file( $attachment_id );
 
         if ( ! $source_path || ! file_exists( $source_path ) ) {
-            return new WP_Error( 'invalid_image', 'Source image not found.', [ 'status' => 400 ] );
+            return new WP_Error( 'invalid_image', __( 'Source image not found.', 'forma-favicon' ), [ 'status' => 400 ] );
         }
 
         $mime    = wp_check_filetype( $source_path );
         $allowed = [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ];
 
         if ( ! in_array( $mime['type'], $allowed, true ) ) {
-            return new WP_Error( 'invalid_type', 'File must be a PNG, JPEG, GIF, or WebP image.', [ 'status' => 400 ] );
+            return new WP_Error( 'invalid_type', __( 'File must be a PNG, JPEG, GIF, or WebP image.', 'forma-favicon' ), [ 'status' => 400 ] );
         }
 
         $img_info = @getimagesize( $source_path );
@@ -221,11 +221,11 @@ function forma_favicon_load_source( $attachment_id, $source_data ) {
             }
         }
     } else {
-        return new WP_Error( 'no_source', 'No source image provided.', [ 'status' => 400 ] );
+        return new WP_Error( 'no_source', __( 'No source image provided.', 'forma-favicon' ), [ 'status' => 400 ] );
     }
 
     if ( ! $source_image ) {
-        return new WP_Error( 'gd_error', 'Could not load source image. Ensure GD is installed and the image is valid.', [ 'status' => 500 ] );
+        return new WP_Error( 'gd_error', __( 'Could not load source image. Ensure GD is installed and the image is valid.', 'forma-favicon' ), [ 'status' => 500 ] );
     }
 
     return $source_image;
@@ -458,7 +458,7 @@ function forma_favicon_validate_conflict( $basename ) {
     $known = forma_favicon_get_known_conflicts();
 
     if ( ! isset( $known[ $basename ] ) ) {
-        return new WP_Error( 'unknown_plugin', 'Plugin is not in the known conflicts list.', [ 'status' => 400 ] );
+        return new WP_Error( 'unknown_plugin', __( 'Plugin is not in the known conflicts list.', 'forma-favicon' ), [ 'status' => 400 ] );
     }
 
     return true;
@@ -479,13 +479,13 @@ function forma_favicon_conflict_deactivate( WP_REST_Request $request ) {
     }
 
     if ( ! is_plugin_active( $basename ) ) {
-        return rest_ensure_response( [ 'success' => true, 'message' => 'Plugin is already inactive.' ] );
+        return rest_ensure_response( [ 'success' => true, 'message' => __( 'Plugin is already inactive.', 'forma-favicon' ) ] );
     }
 
     deactivate_plugins( $basename );
 
     if ( is_plugin_active( $basename ) ) {
-        return new WP_Error( 'deactivation_failed', 'Could not deactivate the plugin.', [ 'status' => 500 ] );
+        return new WP_Error( 'deactivation_failed', __( 'Could not deactivate the plugin.', 'forma-favicon' ), [ 'status' => 500 ] );
     }
 
     return rest_ensure_response( [ 'success' => true ] );
@@ -506,7 +506,7 @@ function forma_favicon_conflict_delete( WP_REST_Request $request ) {
     }
 
     if ( is_plugin_active( $basename ) ) {
-        return new WP_Error( 'still_active', 'Deactivate the plugin before deleting it.', [ 'status' => 400 ] );
+        return new WP_Error( 'still_active', __( 'Deactivate the plugin before deleting it.', 'forma-favicon' ), [ 'status' => 400 ] );
     }
 
     $result = delete_plugins( [ $basename ] );
