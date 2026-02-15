@@ -45,7 +45,8 @@ function forma_favicon_output_tags() {
         if ( $tag['sizes'] ) $attrs .= ' sizes="' . esc_attr( $tag['sizes'] ) . '"';
         $attrs .= ' href="' . esc_url( $url . '/' . $tag['file'] ) . '"';
 
-        echo '<link ' . $attrs . '>' . "\n";
+        // Each attribute value is already escaped above via esc_attr/esc_url.
+        echo '<link ' . wp_kses_post( $attrs ) . '>' . "\n";
     }
 
     $theme_color = ! empty( $option['theme_color'] ) ? $option['theme_color'] : '#ffffff';
@@ -94,9 +95,9 @@ function forma_favicon_general_settings_notice() {
 
     printf(
         '<div class="notice notice-info"><p>%s <a href="%s">%s</a></p></div>',
-        __( 'Your site icon (favicon) is managed by <strong>Forma Favicon</strong>.', 'forma-favicon' ),
-        $url,
-        __( 'Go to Favicon settings →', 'forma-favicon' )
+        wp_kses( __( 'Your site icon (favicon) is managed by <strong>Forma Favicon</strong>.', 'forma-favicon' ), [ 'strong' => [] ] ),
+        esc_url( $url ),
+        esc_html__( 'Go to Favicon settings →', 'forma-favicon' )
     );
 }
 add_action( 'admin_notices', 'forma_favicon_general_settings_notice' );

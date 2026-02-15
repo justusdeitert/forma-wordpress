@@ -424,10 +424,16 @@ function forma_favicon_delete() {
         $files = glob( $dir_path . '/*' );
         foreach ( $files as $file ) {
             if ( is_file( $file ) ) {
-                unlink( $file );
+                wp_delete_file( $file );
             }
         }
-        rmdir( $dir_path );
+
+        global $wp_filesystem;
+        if ( ! function_exists( 'WP_Filesystem' ) ) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+        WP_Filesystem();
+        $wp_filesystem->rmdir( $dir_path );
     }
 
     update_option( 'forma_favicon', [
