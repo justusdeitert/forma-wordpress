@@ -8,6 +8,7 @@
 | ~~**Favicon preview in browser tab**~~ | ~~Live preview showing how the favicon looks in a simulated browser tab~~ | ✅ Done |
 | ~~**Padding/margin control**~~ | ~~Slider to add padding around the icon (useful when logos don't fill the square well)~~ | ✅ Done |
 | ~~**Background fill option**~~ | ~~Toggle to add a solid background color behind transparent PNGs~~ | ✅ Done |
+| ~~**Google Search preview**~~ | ~~Realistic SERP mockup showing how the favicon appears in search results~~ | ✅ Done |
 
 ## Advanced
 
@@ -30,11 +31,25 @@
 ## Implemented
 
 - **Favicon preview in browser tab** — browser-tab mockup with light/dark toggle
+- **Google Search preview** — realistic SERP mockup with favicon in circular container
 - **Padding control** — adjustable 0–40% padding via range slider
 - **Border radius** — adjustable 0–50% border radius
 - **Background fill** — icon background color picker
 - **Live preview** — client-side canvas preview updates in real time
 - **Unsaved indicator** — amber badge when settings differ from generated output
+
+## Preview Ideas
+
+| Preview | Description | Priority |
+|---------|-------------|----------|
+| **iOS / Android home screen** | Apple Touch Icon (180px) and Android Chrome icon (192px) with rounded mask + label text, simulating the actual launcher | High |
+| **Bookmark bar** | 16px favicon inline in a row of bookmark items to test legibility at smallest size | High |
+| **PWA splash screen** | 512px icon centered on bg_color background, simulating the PWA startup screen | Medium |
+| **Multiple tabs** | 4–5 tabs where the favicon is one among others to test distinguishability | Medium |
+| **Windows taskbar** | 32px icon in a simulated Windows 11 taskbar strip | Low |
+| **macOS Dock** | 512px icon with Dock shelf, showing how it looks as a saved web app | Low |
+| **Browser address bar** | 16px favicon next to the URL in Chrome/Safari/Firefox | Low |
+| **Discord / Slack link embed** | Favicon next to an unfurled link card | Low |
 
 ## Priority Suggestions
 
