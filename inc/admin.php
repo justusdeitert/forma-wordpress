@@ -61,6 +61,12 @@ function forma_favicon_enqueue_admin_assets() {
         $asset['version']
     );
 
+    wp_add_inline_style( 'forma-favicon-admin', '
+        #wpbody-content > .notice.inline { display: inline-block; }
+        #forma-favicon-app * { box-sizing: border-box; }
+        #forma-favicon-app button:focus { outline: none; box-shadow: none; }
+    ' );
+
     $option      = get_option( 'forma_favicon', [] );
     $favicon_dir = forma_favicon_get_dir();
     $source_url  = '';
@@ -90,10 +96,5 @@ function forma_favicon_admin_page() {
     <div class="wrap">
         <div id="forma-favicon-app"></div>
     </div>
-    <style>
-        #wpbody-content > .notice.inline { display: inline-block; }
-        #forma-favicon-app * { box-sizing: border-box; }
-        #forma-favicon-app button:focus { outline: none; box-shadow: none; }
-    </style>
     <?php
 }

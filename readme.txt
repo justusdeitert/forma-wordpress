@@ -108,6 +108,19 @@ No. Generated files remain in the uploads directory. You can delete them from th
 * Conflict detection for other favicon plugins
 * Automatic WordPress Site Icon override
 
+== Source Code ==
+
+The full uncompressed source code (TypeScript/TSX, SCSS) and build configuration are available on GitHub:
+https://github.com/justusdeitert/forma-favicon
+
+The `build/` directory is generated from `src/` using `@wordpress/scripts` with a custom webpack configuration.
+
+To build from source:
+
+1. Clone the repository: `git clone https://github.com/justusdeitert/forma-favicon.git`
+2. Install dependencies: `npm install`
+3. Run the build: `npm run build`
+
 == Upgrade Notice ==
 
 = 1.0.0 =
