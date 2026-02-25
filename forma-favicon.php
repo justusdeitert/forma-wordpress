@@ -19,14 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-/**
- * Load plugin text domain for translations.
- */
-function forma_favicon_load_textdomain() {
-    load_plugin_textdomain( 'forma-favicon', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-}
-add_action( 'init', 'forma_favicon_load_textdomain' );
-
 define( 'FORMA_FAVICON_VERSION', '1.0.0' );
 define( 'FORMA_FAVICON_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FORMA_FAVICON_URL', plugin_dir_url( __FILE__ ) );
